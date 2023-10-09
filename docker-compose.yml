@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  testapp:
+    restart: always
+    command: sh -c "cd src && python manage.py runserver 0.0.0.0:8000"
+    build: .
+    volumes:
+      - .:/app:z
+    networks:
+      - postgresdb_network
+    depends_on:
+      - postgresdb
+    ports:
+      - 8000:8000
+
+  postgresdb:
+    restart: always
+    image: postgres:latest
+    env_file:
+      - config/db/db_env
+    networks:
+      - postgresdb_network
+    volumes:
+      - db_volume:/var/lib/postgresql/data:z
+
+networks:
+  postgresdb_network:
+    driver: bridge
+
+volumes:
+  db_volume:
